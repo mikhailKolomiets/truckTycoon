@@ -1,5 +1,6 @@
 package com.gameEntity;
 
+import com.GameProperty;
 import org.apache.commons.lang3.RandomUtils;
 
 /**
@@ -25,12 +26,14 @@ public class City {
         this.name = name;
         this.coordinate = coordinate;
 
-        population = RandomUtils.nextInt(1000000, 2000000);
+        population = RandomUtils.nextInt(GameProperty.POPULATIONFROM, GameProperty.POPULATIONTO);
         resourceProduce = new ResourceProduce();
         fabric = new Fabric();
+
         if(fabric.getType() == resourceProduce.getType()) {
-            fabric.setAmountNeedResource(resourceProduce.getIntegerAmount());
+            fabric.setNeedResource(resourceProduce.getAmountHolder());
         }
+
         goods = new Goods(100, 100, 100);
     }
 
@@ -63,7 +66,7 @@ public class City {
     public String getInfoAbout() {
 
         return name + ", population: " + population + ", fabric:" + " ("
-                + fabric.getType().name().toLowerCase() + "(" + fabric.getAmountNeedResource() + ") -> " + fabric.getType().getProduceName() + "(" + getProducedGoods()
+                + fabric.getType().name().toLowerCase() + "(" + fabric.getNeedResource() + ") -> " + fabric.getType().getProduceName() + "(" + getProducedGoods()
                 + ")" +
                 "), produce resource: " + resourceProduce.getAmount() + " " + resourceProduce.getType().name().toLowerCase()
                 + ", Goods: bread - " + goods.getBread() + ", detail - " + goods.getDetail() + ", furniture - " + goods.getFurniture();

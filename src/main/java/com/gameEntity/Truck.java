@@ -5,13 +5,37 @@ package com.gameEntity;
  */
 public class Truck {
     private String name;
+
+    /**
+     * How much kilometers go with trailer
+     */
     private int mileage;
+
+
     private EngineType engineType;
     private TrailerType trailerType;
     private boolean isResourceType;
+
+    /**
+     * Where is truck stay
+     */
     private City cityStay;
     private Route route;
+
+    /**
+     * Amount of trailer loading
+     */
     private int cargo;
+
+    /**
+     * Amount of each kilometers when trailer lost 1% of his capacity
+     */
+    private static final int DAMEGES = 1000;
+
+    /**
+     * Minimal possible amount of trailer capacity
+     */
+    private static final int MINCAPACITY = 5;
 
     public Truck() {
         name = "Default truck";
@@ -32,8 +56,8 @@ public class Truck {
     public int getTrailerCapacity() {
         int capacity = trailerType.getCapacity() < engineType.getCargoMax() ?
                 trailerType.getCapacity() : engineType.getCargoMax();
-        capacity = (int) (Math.ceil(capacity - capacity * mileage / 100000));
-        return capacity > 5 ? capacity : 5;
+        capacity = (int) (Math.ceil(capacity - capacity * 0.01 * mileage / DAMEGES));
+        return capacity > MINCAPACITY ? capacity : MINCAPACITY;
     }
 
     /**
@@ -59,7 +83,7 @@ public class Truck {
 
         if (isResourceType()) {
             Fabric cityFabric = cityStay.getFabric();
-            cityFabric.setAmountNeedResource(cityFabric.getAmountNeedResource() + cargo);
+            cityFabric.setNeedResource(cityFabric.getNeedResource() + cargo);
         } else {
             cityStay.changeAmountCertainGoods(route.getResourceType(), cargo);
         }

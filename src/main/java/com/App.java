@@ -8,7 +8,7 @@ import com.console.ConsoleEngine;
 public class App {
     public static void main(String[] args) {
 
-        new ConsoleEngine().play(GameController.getVERSION());
+        new ConsoleEngine().play();
 
     }
 }

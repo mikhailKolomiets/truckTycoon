@@ -1,6 +1,7 @@
 package com.console;
 
 import com.GameController;
+import com.GameProperty;
 import com.gameEntity.*;
 
 import java.util.ArrayList;
@@ -19,12 +20,12 @@ public class ConsoleEngine {
     private ConsolePrintUtil consolePrintUtil = new ConsolePrintUtil();
     private Player player = new Player();
 
-    public void play(String version) {
+    public void play() {
         Truck playerTruck = new Truck();
         playerTruck.setCityStay(cityList.get(0));
         player.setTruck(playerTruck);
 
-        System.out.println("Hello in the console game Transport Tycoon v " + version + "\n" + ConsoleCommand.H.getInfoAboutCommands()
+        System.out.println("Hello in the console game Transport Tycoon v " + GameProperty.VERSION + "\n" + ConsoleCommand.H.getInfoAboutCommands()
                 + "\nYou in the " + playerTruck.getCityStay().getName());
 
         boolean quit = true;

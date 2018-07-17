@@ -1,9 +1,6 @@
 package com;
 
-import com.gameEntity.City;
-import com.gameEntity.Goods;
-import com.gameEntity.Route;
-import com.gameEntity.Truck;
+import com.gameEntity.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -14,7 +11,6 @@ import java.util.List;
  */
 public class GameController {
 
-    private static final String VERSION = "1.0";
     private static int[] citiesPopulation;
 
     /**
@@ -38,7 +34,7 @@ public class GameController {
                         route.setResourceType(firstCity.getResourceProduce().getType());
                         // price by need
                         price = firstCity.getResourceProduce().getAmount() > 100 ? 2 : 1;
-                        price *= secondCity.getFabric().getAmountNeedResource() < 300 ? 2 : 1;
+                        price *= secondCity.getFabric().getNeedResource() < 300 ? 2 : 1;
                     }
                 } else {
                     route = new Route();
@@ -86,7 +82,7 @@ public class GameController {
      */
     public void nextIteration(ArrayList<City> cityList, List<Truck> trucksList) {
 
-        uploadCPUTrailers(trucksList, cityList, 1);
+        uploadCPUTrailers(trucksList, cityList, GameProperty.numberOfPlayers);
 
         for (Truck truck : trucksList) {
             if (truck.getRoute() != null) {
@@ -98,7 +94,7 @@ public class GameController {
 
         for (City city : cityList) {
             city.getResourceProduce().produceResource();
-            if (city.getProducedGoods() < 150) {
+            if (city.getProducedGoods() < Fabric.getSTOCK()) {
                 city.changeAmountCertainGoods(city.getFabric().getType(), city.getFabric().produceGoods());
             }
             consumptionGoods(city);
@@ -106,11 +102,11 @@ public class GameController {
     }
 
     /**
-     * Consumption goods from city, each to 100 000 people
+     * Consumption goods from city
      */
     private void consumptionGoods(City city) {
-        int population = city.getPopulation() + 100000;
-        int consumption = population / 100000;
+        int population = city.getPopulation() + GameProperty.CONSUPTORGROUP;
+        int consumption = population / GameProperty.CONSUPTORGROUP;
         Goods cityGoods = city.getGoods();
         int bread = cityGoods.getBread();
         int detail = cityGoods.getDetail();
@@ -118,26 +114,26 @@ public class GameController {
 
         bread -= consumption;
         if (bread < 0) {
-            population -= 100000;
+            population -= GameProperty.CONSUPTORGROUP;
             bread = 0;
         }
 
         detail -= consumption;
         if (detail < 0) {
-            population -= 100000;
+            population -= GameProperty.CONSUPTORGROUP;
             detail = 0;
         }
 
         furniture -= consumption;
         if (furniture < 0) {
-            population -= 100000;
+            population -= GameProperty.CONSUPTORGROUP;
             furniture = 0;
         }
         cityGoods.setBread(bread);
         cityGoods.setDetail(detail);
         cityGoods.setFurniture(furniture);
 
-        if (population < 100000)
+        if (population < GameProperty.CONSUPTORGROUP)
             population = 0;
 
         city.setPopulation(population);
@@ -167,7 +163,7 @@ public class GameController {
      * Check game result
      * Init massive of population in start. Check percent by this massive.
      *
-     * @return int progress population in percent or - 100 if one of city has 0 population
+     * @return int progress population in percent or -100 if one of city has 0 population
      */
     public static int gameResult(List<City> cityList) {
 
@@ -195,7 +191,4 @@ public class GameController {
         return result;
     }
 
-    public static String getVERSION() {
-        return VERSION;
-    }
 }

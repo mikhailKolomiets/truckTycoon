@@ -4,7 +4,27 @@ package com.gameEntity;
  * Fabric entity. May produce certain product from certain type resource.
  */
 public class Fabric {
-    private Integer amountNeedResource;
+    private AmountHolder needResource;
+
+    /**
+     * AmountHolder of the resource for produce goods then create fabric
+     */
+    private static final int INITAMOUNT = 1000;
+
+    /**
+     * Possible power fabric (produced goods per iteration)
+     */
+    private static final int MAXPRODUCE = 25;
+
+    /**
+     * AmountHolder of resources need for create 1 product
+     */
+    private static final int RESFOR = 10;
+
+    /**
+     * Size of stock (If stock amount less when produced goods - > fabric stop produce)
+     */
+    private static final int STOCK = 200;
 
     /**
      * Type of fabric
@@ -12,39 +32,47 @@ public class Fabric {
     private ResourceType type;
 
     public Fabric() {
-        amountNeedResource = 200;
+        needResource = new AmountHolder();
+        needResource.setAmount(INITAMOUNT);
         type = ResourceType.getRandom();
     }
 
     /**
-     * Produce goods from need resource by type of fabric (10 res - 1 goods, 50 goods max)
-     * @return produced goods for cities
+     * Produce goods from need resource
+     * @return int amount produced goods for cities
      */
     public int produceGoods() {
         int producedAmount;
-        if (amountNeedResource >= 500) {
-            amountNeedResource -= 500;
-            return 50;
+        if (needResource.getAmount() >= MAXPRODUCE * RESFOR) {
+            needResource.add(-MAXPRODUCE * RESFOR);
+            return MAXPRODUCE;
         } else {
-            producedAmount = amountNeedResource / 10;
-            amountNeedResource %= 10;
+            producedAmount = needResource.getAmount() / RESFOR;
+            needResource.add(-producedAmount * RESFOR);
         }
         return producedAmount;
     }
 
-    public int getAmountNeedResource() {
-        return amountNeedResource;
+    public int getNeedResource() {
+        return needResource.getAmount();
     }
 
-    public void setAmountNeedResource(int amountNeedResource) {
-        this.amountNeedResource = amountNeedResource;
+    public void setNeedResource(Integer needResource) {
+        this.needResource.setAmount(needResource);
     }
 
-    public void setAmountNeedResource(Integer amount) {
-        amountNeedResource = amount;
+    /**
+     * Overload method for set certain AmountHolder
+     */
+    public void setNeedResource(AmountHolder amountHolder) {
+        needResource = amountHolder;
     }
+
     public ResourceType getType() {
         return type;
     }
 
+    public static int getSTOCK() {
+        return STOCK;
+    }
 }
