@@ -12,6 +12,15 @@ import java.util.List;
 public class GameController {
 
     private static int[] citiesPopulation;
+    private ArrayList<City> cityList;
+    private List<Truck> cpuTruckList;
+    private Player player = new Player();
+
+    public GameController() {
+        cityList = GameProperty.cityInit();
+        cpuTruckList = generateCpuTrucks();
+        player = new Player();
+    }
 
     /**
      * Get list of all possible routes from city, where stay track.
@@ -140,6 +149,29 @@ public class GameController {
     }
 
     /**
+     * Create 10 default computer truck for game
+     *
+     * @return ArrayList of default trucks resource and goods type
+     */
+    private List<Truck> generateCpuTrucks() {
+        ArrayList<Truck> cpuTruckList = new ArrayList<>();
+        boolean resourceType = true;
+        for (int i = 0; i < 10; i++) {
+            Truck truck = new Truck("CPU" + i, cityList.get(i));
+            truck.setIsResourceType(resourceType);
+            resourceType = !resourceType;
+
+            //source need *10 most
+            if (truck.isResourceType()) {
+                truck.setEngineType(EngineType.Z730);
+                truck.setTrailerType(TrailerType.WIELTON);
+            }
+            cpuTruckList.add(truck);
+        }
+        return cpuTruckList;
+    }
+
+    /**
      * Set for all computer trailer best routes
      *
      * @param trucks  - list of all truck in game
@@ -191,4 +223,19 @@ public class GameController {
         return result;
     }
 
+    public ArrayList<City> getCityList() {
+        return cityList;
+    }
+
+    public List<Truck> getCpuTruckList() {
+        return cpuTruckList;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public static int[] getCitiesPopulation() {
+        return citiesPopulation;
+    }
 }
