@@ -223,6 +223,35 @@ public class GameController {
         return result;
     }
 
+    public String updateTruck(EngineType engineType) {
+        if (engineType.getPrice() > player.getMoney()) {
+            return "You have not enough money";
+        } else {
+            player.getTruck().setEngineType(engineType);
+            player.getTruck().setMileage(0);
+            player.setMoney(player.getMoney() - engineType.getPrice());
+            return "You success update engine for " + engineType.name();
+        }
+    }
+
+    public String updateTruck(TrailerType trailerType) {
+        if (trailerType == player.getTruck().getTrailerType()) {
+            player.getTruck().setIsResourceType(!player.getTruck().isResourceType());
+            return "You change trailer type";
+        }
+        if (trailerType.getPrice() > player.getMoney()) {
+            return "You have not enough money";
+        } else {
+            player.getTruck().setTrailerType(trailerType);
+            player.setMoney(player.getMoney() - trailerType.getPrice());
+            return "You success update engine for " + trailerType.name();
+        }
+    }
+
+    public void cashMoneyForRoute(Route route) {
+        player.setMoney(player.getMoney() + route.getPrice());
+    }
+
     public ArrayList<City> getCityList() {
         return cityList;
     }

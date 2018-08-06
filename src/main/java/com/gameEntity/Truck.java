@@ -90,7 +90,7 @@ public class Truck {
 
         mileage += route.getDistance();
         System.out.println(name + " unload " + cargo + " " + (isResourceType() ? route.getResourceType().name().toLowerCase() : route.getResourceType().getProduceName()) +
-        " to the " + cityStay.getName());
+        " to the " + cityStay.getName() + " " + cityStay);
         route = null;
     }
 

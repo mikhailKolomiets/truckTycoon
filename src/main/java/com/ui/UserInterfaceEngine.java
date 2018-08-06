@@ -34,14 +34,14 @@ public class UserInterfaceEngine {
         playerTruck.setCityStay(cityList.get(0));
         player.setTruck(playerTruck);
         truckList.add(playerTruck);
-
+        GameController.gameResult(cityList);
     }
 
     public void play() {
         UIGrathic grathic = new UIGrathic(gameController);
         while (true) {
             try {
-                Thread.sleep(200);
+                Thread.sleep(250);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

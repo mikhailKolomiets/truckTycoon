@@ -3,7 +3,9 @@ package com.ui;
 import com.GameController;
 import com.GameProperty;
 import com.gameEntity.City;
+import com.gameEntity.EngineType;
 import com.gameEntity.Route;
+import com.gameEntity.TrailerType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,6 +27,7 @@ public class UIGrathic extends JFrame {
     private List<Route> routeList;
     private String leftInfo;
     private String rigthInfo;
+    private boolean byeEngine, byeTrailer;
 
 
     UIGrathic(GameController gameController) {
@@ -37,7 +40,9 @@ public class UIGrathic extends JFrame {
 
         cities = gameController.getCityList();
         uploadAndGoByMouseClick();
+        updateTruck();
         keyboardControl();
+        leftInfo = "";
     }
 
     @Override
@@ -50,29 +55,36 @@ public class UIGrathic extends JFrame {
         g.setColor(citiesColor);
         g.setFont(new Font(Font.SERIF, Font.BOLD, 12));
         Point coordinate;
+        int cityResultNumber = 0;
+        int population;
         for (City city : cities) {
             coordinate = cityPoint(city);
             if (gameController.getPlayer().getTruck().getCityStay().getName().equals(city.getName())) {
                 g.setColor(playerColor);
             }
+            population = GameController.getCitiesPopulation()[cityResultNumber++];
+            population = (int) ((city.getPopulation() - population) / (double) population * 100);
             g.fillOval(coordinate.x, coordinate.y, CITYPOINTRADIUS, CITYPOINTRADIUS);
-            g.drawString(city.getName(), coordinate.x - 11, coordinate.y);
-            //getInfoAboutCityByMouseClick(coordinate.x, coordinate.y, city.getName());
+            g.drawString(city.getName() + "(" + population + ")", coordinate.x - 11, coordinate.y);
             g.setColor(citiesColor);
         }
 
         if (leftInfo != null) {
             String[] text = leftInfo.split(";");
             int higthCorrect = this.getHeight() - text.length * 10;
-            for(String message : text) {
-            g.drawString(message, 0, higthCorrect);
-            higthCorrect -= 10;
+            for (String message : text) {
+                g.drawString(message, 0, higthCorrect);
+                higthCorrect += 10;
             }
         }
 
         if (rigthInfo != null) {
             g.drawString(rigthInfo, this.getWidth() / 2, this.getHeight() - 10);
         }
+
+        g.drawString("Money: " + gameController.getPlayer().getMoney() + " $ Truck: " +
+                gameController.getPlayer().getTruck().getEngineType() + " Trailer: " +
+                gameController.getPlayer().getTruck().getTrailerType(), 450, 10);
     }
 
     private void uploadAndGoByMouseClick() {
@@ -89,21 +101,62 @@ public class UIGrathic extends JFrame {
                         rigthInfo = uploadAndGo(city);
 
                     }
-                        //System.out.println(city);
                 }
             });
         }
     }
 
+    private void updateTruck() {
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (e.getX() < 100 && e.getY() > 500){
+                    System.out.println(e.getX() + " " + e.getY());
+                    checkUpdateTruck(e.getY());
+                    byeEngine = false;
+                    byeTrailer = false;
+                }
+            }
+        }) ;
+    }
+
     private String uploadAndGo(City city) {
+        System.out.println(city);
+        if (routeList == null) {
+            return "No route. Find press 'R'";
+        }
         for (Route route : routeList) {
-            if(route.getDestination().getName().equals(city.getName())) {
+            if (route.getDestination().getName().equals(city.getName())) {
                 gameController.getPlayer().getTruck().setRoute(route);
+                gameController.getPlayer().getTruck().loadingTrailer(route);
                 gameController.nextIteration(cities, gameController.getCpuTruckList());
-                return  "You go to the " + city.getName();
+                gameController.cashMoneyForRoute(route);
+                routeList = null;
+                return "You go to the " + city.getName();
             }
         }
         return "Where is no route for " + city.getName();
+    }
+
+    private void checkUpdateTruck(int yPos) {
+        int startCheck = 520;
+        if (byeEngine)
+        for(EngineType engineType : EngineType.values()) {
+            if (yPos > startCheck && yPos < startCheck + 10) {
+                rigthInfo = gameController.updateTruck(engineType);
+                System.out.println(rigthInfo + " <---");
+            }
+            startCheck += 10;
+        }
+        startCheck = 550;
+        if (byeTrailer)
+            for(TrailerType trailerType : TrailerType.values()) {
+                if (yPos > startCheck && yPos < startCheck + 10) {
+                    rigthInfo = gameController.updateTruck(trailerType);
+                    System.out.println(rigthInfo + " <---");
+                }
+                startCheck += 10;
+            }
     }
 
     /**
@@ -132,6 +185,29 @@ public class UIGrathic extends JFrame {
                         for (Route route : routeList) {
                             leftInfo += route.getDestination().getName() + " " + route.getAmount() + " " +
                                     route.getPrice() + ";";
+                        }
+                        break;
+                    case KeyEvent.VK_U:
+
+                        leftInfo = "";
+                        for (EngineType engineType : EngineType.values()) {
+                            leftInfo += engineType + " " + engineType.getPrice() + "$;";
+                            byeEngine = true;
+                        }
+                        break;
+                    case KeyEvent.VK_T:
+
+                        leftInfo = "";
+                        for (TrailerType trailerType : TrailerType.values()) {
+                            leftInfo += trailerType + " " + trailerType.getPrice() + "$;";
+                            byeTrailer = true;
+                        }
+                        break;
+
+                    case KeyEvent.VK_I:
+                        leftInfo = "";
+                        for (City city : cities) {
+                            leftInfo += city.getInfoAbout() + ";";
                         }
                         break;
                 }
