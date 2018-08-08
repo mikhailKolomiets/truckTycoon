@@ -30,6 +30,7 @@ public class ConsoleEngine {
                 + "\nYou in the " + playerTruck.getCityStay().getName());
 
         boolean quit = true;
+        int gameProgress;
         GameController.gameResult(cityList);
 
         truckList.add(playerTruck);
@@ -63,7 +64,8 @@ public class ConsoleEngine {
                 //go to next game day
                 case N:
                     gameController.nextIteration(cityList, truckList);
-                    if (!ConsolePrintUtil.checkGameResult(cityList)) {
+                    gameProgress = gameController.checkGameResult();
+                    if (gameProgress > -100 & gameProgress < 100) {
                         System.out.println("Welcome to the " + playerTruck.getCityStay().getName());
                     } else {
                         quit = false;

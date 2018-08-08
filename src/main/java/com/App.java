@@ -9,9 +9,10 @@ import com.ui.UserInterfaceEngine;
 public class App {
     public static void main(String[] args) {
 
-       // new ConsoleEngine().play();
-
-        new UserInterfaceEngine().play();
-
+        if (args.length > 0 && args[0].equals("ui")) {
+            new UserInterfaceEngine().play();
+        } else {
+            new ConsoleEngine().play();
+        }
     }
 }

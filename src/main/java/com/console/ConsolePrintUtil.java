@@ -121,22 +121,4 @@ public class ConsolePrintUtil {
                 "(" + truck.getMileage() + "), trailer: " + truck.getTrailerType() + " (" + truck.getTrailerCapacity() + ")");
     }
 
-    /**
-     * @param cityList list of city in this iteration
-     * @return true if percent of game progress equals condition, and console message, course
-     */
-    public static boolean checkGameResult(List<City> cityList) {
-        boolean endGame = false;
-        int result = GameController.gameResult(cityList);
-        if (result < -90) {
-            System.out.println("Sorry game over.");
-            endGame = true;
-        } else if (result > 99) {
-            System.out.println("Wow! It's great win!");
-            endGame = true;
-        } else {
-            System.out.println("Game progress " + result + "%");
-        }
-        return endGame;
-    }
 }

@@ -6,10 +6,6 @@ import com.gameEntity.City;
 import com.gameEntity.Player;
 import com.gameEntity.Truck;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
 
@@ -39,9 +35,10 @@ public class UserInterfaceEngine {
 
     public void play() {
         UIGrathic grathic = new UIGrathic(gameController);
-        while (true) {
+
+        while (grathic.getGameResult() > -100 & grathic.getGameResult() < 100) {
             try {
-                Thread.sleep(250);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Created by Mihail Kolomiets on 05.08.18.
+ * Graphic interface.
  */
 public class UIGrathic extends JFrame {
 
@@ -28,6 +28,7 @@ public class UIGrathic extends JFrame {
     private String leftInfo;
     private String rigthInfo;
     private boolean byeEngine, byeTrailer;
+    private int gameResult;
 
 
     UIGrathic(GameController gameController) {
@@ -36,8 +37,8 @@ public class UIGrathic extends JFrame {
         setVisible(true);
         setLayout(null);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        this.gameController = gameController;
 
+        this.gameController = gameController;
         cities = gameController.getCityList();
         uploadAndGoByMouseClick();
         updateTruck();
@@ -49,6 +50,8 @@ public class UIGrathic extends JFrame {
     public void paint(Graphics g) {
         Color playerColor = new Color(0x2E3FC4);
         Color citiesColor = new Color(0x0FC477);
+        Color loseColor = new Color(0xC41B1B);
+        Color winColor = new Color(0xB6C40A);
 
         g.setColor(Color.cyan);
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
@@ -65,7 +68,7 @@ public class UIGrathic extends JFrame {
             population = GameController.getCitiesPopulation()[cityResultNumber++];
             population = (int) ((city.getPopulation() - population) / (double) population * 100);
             g.fillOval(coordinate.x, coordinate.y, CITYPOINTRADIUS, CITYPOINTRADIUS);
-            g.drawString(city.getName() + "(" + population + ")", coordinate.x - 11, coordinate.y);
+            g.drawString(city.getName() + "(" + population + " %)", coordinate.x - 11, coordinate.y);
             g.setColor(citiesColor);
         }
 
@@ -85,8 +88,21 @@ public class UIGrathic extends JFrame {
         g.drawString("Money: " + gameController.getPlayer().getMoney() + " $ Truck: " +
                 gameController.getPlayer().getTruck().getEngineType() + " Trailer: " +
                 gameController.getPlayer().getTruck().getTrailerType(), 450, 10);
+
+        if(gameResult < -99) {
+            g.setColor(loseColor);
+            g.setFont(new Font(Font.SERIF, Font.BOLD, 32));
+            g.drawString("You lose, sorry", this.getWidth()/2 - 200, this.getHeight()/2 - 20);
+        }else if(gameResult > 99) {
+            g.setColor(winColor);
+            g.setFont(new Font(Font.SERIF, Font.BOLD, 32));
+            g.drawString("You won!!!", this.getWidth()/2 - 200, this.getHeight()/2 - 20);
+        }
     }
 
+    /**
+     * Check click for certain city point on map, if ok -> invoke method for uploading etc...
+     */
     private void uploadAndGoByMouseClick() {
         for (City city : cities) {
             Point point = cityPoint(city);
@@ -98,20 +114,25 @@ public class UIGrathic extends JFrame {
                             e.getX() > point.x &&
                             e.getY() < point.y + CITYPOINTRADIUS &&
                             e.getY() > point.y) {
+
                         rigthInfo = uploadAndGo(city);
 
+                        gameResult = gameController.checkGameResult();
+                        rigthInfo += ". Game progress: " + gameResult + " %.";
                     }
                 }
             });
         }
     }
 
+    /**
+     * Update by screen position update list
+     */
     private void updateTruck() {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (e.getX() < 100 && e.getY() > 500){
-                    System.out.println(e.getX() + " " + e.getY());
                     checkUpdateTruck(e.getY());
                     byeEngine = false;
                     byeTrailer = false;
@@ -120,8 +141,11 @@ public class UIGrathic extends JFrame {
         }) ;
     }
 
+    /**
+     * upload player trailer and go to the next iteration
+     */
     private String uploadAndGo(City city) {
-        System.out.println(city);
+
         if (routeList == null) {
             return "No route. Find press 'R'";
         }
@@ -144,7 +168,6 @@ public class UIGrathic extends JFrame {
         for(EngineType engineType : EngineType.values()) {
             if (yPos > startCheck && yPos < startCheck + 10) {
                 rigthInfo = gameController.updateTruck(engineType);
-                System.out.println(rigthInfo + " <---");
             }
             startCheck += 10;
         }
@@ -153,7 +176,6 @@ public class UIGrathic extends JFrame {
             for(TrailerType trailerType : TrailerType.values()) {
                 if (yPos > startCheck && yPos < startCheck + 10) {
                     rigthInfo = gameController.updateTruck(trailerType);
-                    System.out.println(rigthInfo + " <---");
                 }
                 startCheck += 10;
             }
@@ -206,6 +228,7 @@ public class UIGrathic extends JFrame {
 
                     case KeyEvent.VK_I:
                         leftInfo = "";
+                        rigthInfo = "";
                         for (City city : cities) {
                             leftInfo += city.getInfoAbout() + ";";
                         }
@@ -213,5 +236,9 @@ public class UIGrathic extends JFrame {
                 }
             }
         });
+    }
+
+    public int getGameResult() {
+        return gameResult;
     }
 }

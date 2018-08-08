@@ -223,6 +223,9 @@ public class GameController {
         return result;
     }
 
+    /**
+     * Update truck engine
+     */
     public String updateTruck(EngineType engineType) {
         if (engineType.getPrice() > player.getMoney()) {
             return "You have not enough money";
@@ -234,6 +237,9 @@ public class GameController {
         }
     }
 
+    /**
+     *  Update truck trailer or change it type
+     */
     public String updateTruck(TrailerType trailerType) {
         if (trailerType == player.getTruck().getTrailerType()) {
             player.getTruck().setIsResourceType(!player.getTruck().isResourceType());
@@ -250,6 +256,22 @@ public class GameController {
 
     public void cashMoneyForRoute(Route route) {
         player.setMoney(player.getMoney() + route.getPrice());
+    }
+
+    /**
+     * @return percent of game progress equals condition, and console message, course
+     */
+    public int checkGameResult() {
+
+        int result = GameController.gameResult(cityList);
+        if (result < -90) {
+            System.out.println("Sorry game over.");
+        } else if (result > 99) {
+            System.out.println("Wow! It's great win!");
+        } else {
+            System.out.println("Game progress " + result + "%");
+        }
+        return result;
     }
 
     public ArrayList<City> getCityList() {
